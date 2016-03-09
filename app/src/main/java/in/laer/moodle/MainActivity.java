@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -93,26 +94,28 @@ public class MainActivity extends AppCompatActivity {
                     while (lines.hasNext()) {
                         Element line = lines.next();
 
-                        sb.append(line.text());
+                        sb.append(line.text() + "\n");
                     }
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            return sb.toString();
+            String result = sb.toString();
+            System.out.println(result);
+            return result;
         }
 
         @Override
         protected void onPostExecute(final String result) {
 
             // TODO:set textview
-
+            Log.d("Notices", result);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     //      txtView.setText(result);
+
                 }
             });
         }

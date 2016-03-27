@@ -6,10 +6,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,13 +25,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 new DownloadWebPageTask().execute();
                 Snackbar.make(view, "Fetching Notices", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                TextView txtView = (TextView) findViewById(R.id.progressText);
+                txtView.setText("");
             }
         });
     }
@@ -68,14 +73,16 @@ public class MainActivity extends AppCompatActivity {
         // The variable is moved here, we only need it here while displaying the
         // progress dialog.
 
+        ProgressBar dialog = (ProgressBar) findViewById(R.id.progressdialog);
+        TextView txtView;
 
         @Override
         protected void onPreExecute() {
-            //   dialog.show();
-            //   dialog.setContentView(R.layout.activity_main);
-            // Set the variable txtView here, after setContentView on the dialog
-            // has been called! use dialog.findViewById().
-            //   txtView = (TextView)dialog.findViewById(R.id.txtView);
+            dialog.setIndeterminate(true);
+            dialog.setVisibility(View.VISIBLE);
+            txtView = (TextView) findViewById(R.id.progressText);
+            txtView.setMovementMethod(new ScrollingMovementMethod());
+
         }
 
 
@@ -84,9 +91,11 @@ public class MainActivity extends AppCompatActivity {
             StringBuffer sb = new StringBuffer();
             try {
                 List<Element> notices = new ArrayList<>();
-// Get The Site and Parse it
+                // List<Element> links = new ArrayList<>();
+                // Get The Site and Parse it
                 Document document = Jsoup.connect("http://moodle.siesgst.ac.in").get();
                 notices.addAll(document.select(".forumpost").addClass("posting"));
+                //notices.addAll(document.select("a"));
                 // Select Table
 
                 for (Element notice : notices) {
@@ -109,15 +118,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String result) {
 
-            // TODO:set textview
+
             Log.d("Notices", result);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //      txtView.setText(result);
 
+                    txtView.setText(result);
+                    dialog.setVisibility(View.GONE);
                 }
             });
         }
     }
+
 }

@@ -102,8 +102,15 @@ public class MainActivity extends AppCompatActivity {
                     Iterator<Element> lines = notice.select("td").addClass("posting").iterator();
                     while (lines.hasNext()) {
                         Element line = lines.next();
+                        //if(line.text().endsWith("\n"))
+                        //if(!line.text().startsWith("\n"))
 
-                        sb.append(line.text() + "\n");
+
+                        if (!line.text().isEmpty()) {
+                            sb.append("*" + line.text() + "\n");
+                        } else {
+                            lines.hasNext();
+                        }
                     }
                 }
 
